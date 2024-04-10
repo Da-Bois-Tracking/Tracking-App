@@ -24,16 +24,14 @@ services:
    - "15432:5432"
 
  vite_frontend:
-  image: node:lts-bullseye
-  command: npm run dev
-  working_dir: /app
-  volumes:
-   - ./Frontend:/app
+  build:
+   context: ./Frontend
+   dockerfile: Dockerfile.frontend
   ports:
    - "3000:3000"
   environment:
    HOST_OS: ${OS}
-   NODE_ENV: development
+   HOST_ENV: development
    HOST: "0.0.0.0"
    VITE_API_HOST: ${VITE_API_HOST}
 
