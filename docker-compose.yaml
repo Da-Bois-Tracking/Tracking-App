@@ -1,7 +1,3 @@
-volumes:
- postgres-data:
-  external: true
-
 services:
  fastapi:
   environment:
@@ -40,3 +36,6 @@ services:
    NODE_ENV: development
    HOST: "0.0.0.0"
    VITE_API_HOST: http://localhost:8000
+
+volumes:
+ postgres-data: {}
