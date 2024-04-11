@@ -24,4 +24,4 @@ app.add_middleware(
 
 @app.get("/", tags=["Greetings"])
 def Hello():
-    return {"Hello": "World"}
+    return {"Hello": "LANCE"}

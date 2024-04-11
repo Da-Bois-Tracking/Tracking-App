@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
  fastapi:
   depends_on:
@@ -26,9 +28,9 @@ services:
    - "15432:5432"
 
  vite_frontend:
-  build:
-   context: ./Frontend
-   dockerfile: Dockerfile.frontend
+  image: node:latest
+  command: /bin/bash -c "npm install @rollup/rollup-linux-x64-gnu && npm install -g npm@10.5.2 && npm run dev"
+  working_dir: /app
   ports:
    - "3000:3000"
   environment:
@@ -36,6 +38,8 @@ services:
    HOST_ENV: development
    HOST: "0.0.0.0"
    VITE_API_HOST: ${VITE_API_HOST}
+  volumes:
+   - ./Frontend:/app
 
 volumes:
  postgres-data: {}
