@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-      <div>
+      <div className="bg-black">
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
@@ -22,7 +22,7 @@ function App() {
           count is {count}
         </button>
         <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+          HOT RELOAD
         </p>
       </div>
       <p className="read-the-docs">
