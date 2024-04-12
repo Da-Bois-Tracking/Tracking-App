@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Response
 from typing import List, Union
-from queries.users import UserOut, UsersRepository, Error, UserIn
+from queries.users import UserOut, UsersRepository, Error, UserIn, UserUpdate
 
 router = APIRouter()
 
@@ -35,7 +35,7 @@ def get_user(
 @router.put("/users/{user_id}", response_model=Union[UserOut, Error], tags=["Users"])
 def update_user(
     user_id: int,
-    user: UserIn,
+    user: UserUpdate,
     repo: UsersRepository = Depends(),
 ) -> Union[UserOut, Error]:
     return repo.update_user(user_id, user)

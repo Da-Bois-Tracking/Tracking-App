@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from queries.pool import connection_pool
-from typing import Union
+from typing import Union, Optional
 from datetime import date
 
 
@@ -45,6 +45,24 @@ class UserOut(BaseModel):
     position: str
 
 
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+    member_since: Optional[date] = None
+    date_of_birth: Optional[date] = None
+    phone_number: Optional[str] = None
+    country: Optional[str] = None
+    state: Optional[str] = None
+    city: Optional[str] = None
+    weight: Optional[float] = None
+    height_cm: Optional[float] = None
+    skill_level: Optional[str] = None
+    position: Optional[str] = None
+
+
 class UsersRepository:
     def get_all(self):
         try:
@@ -76,11 +94,11 @@ class UsersRepository:
         except Exception as e:
             return Error(message=f"Failed to retrieve users: {str(e)}")
 
-    def user_in_to_out(self, id: int, user: UserOut):
-        old_data = user.model_dump()
-        return UserOut(id=id, **old_data)
+    def user_in_to_out(self, id: int, user_data: dict) -> Union[UserOut, Error]:
+        user_data.pop("id", None)
+        return UserOut(id=id, **user_data)
 
-    def create_user(self, user: UserIn) -> UserOut:
+    def create_user(self, user: UserIn) -> Union[UserOut, Error]:
         try:
             conn = connection_pool.getconn()
             with conn.cursor() as db:
@@ -124,9 +142,9 @@ class UsersRepository:
                         user.position,
                     ],
                 )
-                id = db.fetchone()[0]
+                user_id = db.fetchone()[0]
                 conn.commit()
-                return self.user_in_to_out(id, user)
+                return self.user_in_to_out(user_id, user.model_dump())
         except Exception as e:
             print(e)
             return Error(message=f"Failed to create user: {str(e)}")
@@ -169,58 +187,36 @@ class UsersRepository:
         except Exception as e:
             return Error(message=f"Failed to retrieve user: {str(e)}")
 
-    def update_user(self, user_id: int, user: UserIn) -> Union[UserOut, Error]:
+    def update_user(self, user_id: int, user: UserUpdate) -> Union[UserOut, Error]:
         try:
             conn = connection_pool.getconn()
             with conn.cursor() as db:
-                db.execute(
-                    "SELECT COUNT(*) FROM users WHERE id = %s;",
-                    [user_id],
-                )
-                user_count = db.fetchone()[0]
-                if user_count == 0:
+                db.execute("SELECT * FROM users WHERE id = %s;", [user_id])
+                existing_user = db.fetchone()
+                if not existing_user:
                     return Error(message="User not found.")
-                db.execute(
-                    """
-                    update users
-                    set username = %s,
-                        first_name = %s,
-                        last_name = %s,
-                        email = %s,
-                        password = %s,
-                        member_since = %s,
-                        date_of_birth = %s,
-                        phone_number = %s,
-                        country = %s,
-                        state = %s,
-                        city = %s,
-                        weight = %s,
-                        height_cm = %s,
-                        skill_level = %s,
-                        position = %s
-                    where id = %s
-                    """,
-                    [
-                        user.username,
-                        user.first_name,
-                        user.last_name,
-                        user.email,
-                        user.password,
-                        user.member_since,
-                        user.date_of_birth,
-                        user.phone_number,
-                        user.country,
-                        user.state,
-                        user.city,
-                        user.weight,
-                        user.height_cm,
-                        user.skill_level,
-                        user.position,
-                        id,
-                    ],
-                )
-                conn.commit()
-                return self.user_in_to_out(id, user)
+
+                updates, values = [], []
+                for field, value in user.model_dump(exclude_none=True).items():
+                    updates.append(f"{field} = %s")
+                    values.append(value)
+                if updates:
+                    query = (
+                        "UPDATE users SET "
+                        + ", ".join(updates)
+                        + " WHERE id = %s RETURNING *;"
+                    )
+                    values.append(user_id)
+                    db.execute(query, values)
+                    updated_user = db.fetchone()
+                    conn.commit()
+                    return self.user_in_to_out(
+                        user_id, self.user_to_out(updated_user).model_dump()
+                    )
+                else:
+                    return self.user_in_to_out(
+                        user_id, self.user_to_out(existing_user).model_dump()
+                    )
         except Exception as e:
             return Error(message=f"Failed to update user: {str(e)}")
 
