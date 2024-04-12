@@ -1,27 +1,13 @@
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from dotenv import load_dotenv
-import os
-
-# Load the environment variables
-load_dotenv()
 
 
 def users_table():
     # Connection parameters
-    connection_params = {
-        "dbname": os.getenv("POSTGRES_DB"),
-        "user": os.getenv("POSTGRES_USER"),
-        "host": os.getenv("POSTGRES_HOST"),
-        "port": os.getenv("POSTGRES_PORT"),
-        "password": os.getenv("POSTGRES_PASSWORD"),
-    }
-
-    # Construct DSN (Data Source Name) string
-    dsn = " ".join([f"{key}={value}" for key, value in connection_params.items()])
+    connection_params = "dbname='tracking_app' user='postgres' host='postgres' port='5432' password='tracking_app_password'"
 
     # Connect to your database
-    conn = psycopg2.connect(dsn)
+    conn = psycopg2.connect(connection_params)
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
     # Create a cursor object
