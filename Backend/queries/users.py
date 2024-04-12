@@ -197,7 +197,7 @@ class UsersRepository:
                     return Error(message="User not found.")
 
                 updates, values = [], []
-                for field, value in user.model_dump(exclude_none=True).items():
+                for field, value in user.model_dump.items():
                     updates.append(f"{field} = %s")
                     values.append(value)
                 if updates:
