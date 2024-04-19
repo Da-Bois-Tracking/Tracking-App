@@ -1,4 +1,3 @@
-# queries/items.py
 from pydantic import BaseModel
 from queries.pool import connection_pool
 from typing import Union

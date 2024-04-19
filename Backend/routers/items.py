@@ -1,4 +1,3 @@
-# routers/items.py
 from fastapi import APIRouter, Depends, Response, HTTPException
 from typing import List, Union
 from queries.items import ItemIn, ItemOut, ItemsRepository, Error
@@ -34,7 +33,7 @@ def get_item(
 ) -> Union[ItemOut, Error]:
     record = repo.get_by_id(item_id)
     if record is None:
-        raise HTTPException(status_code=404, detail="Item not found")
+        response.status_code = 404
     return record
 
 
