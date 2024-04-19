@@ -1,14 +1,14 @@
+version: "3.8"
+
 services:
  fastapi:
+  image: deguzmancory/backend:latest
   depends_on:
    - postgres
   environment:
    DATABASE_URL: ${DATABASE_URL}
    CORS_HOST: ${CORS_HOST}
    SIGNING_KEY: ${SIGNING_KEY}
-  build:
-   context: Backend
-   dockerfile: Dockerfile.dev
   ports:
    - 8000:8000
   volumes:
@@ -26,9 +26,9 @@ services:
    - "15432:5432"
 
  vite_frontend:
-  build:
-   context: ./Frontend
-   dockerfile: Dockerfile.frontend
+  image: deguzmancory/frontend:latest
+  command: /bin/bash -c "npm install @rollup/rollup-linux-x64-gnu && npm install -g npm@10.5.2 && npm run dev"
+  working_dir: /app
   ports:
    - "3000:3000"
   environment:
@@ -36,6 +36,8 @@ services:
    HOST_ENV: development
    HOST: "0.0.0.0"
    VITE_API_HOST: ${VITE_API_HOST}
+  volumes:
+   - ./Frontend:/app
 
 volumes:
  postgres-data: {}
