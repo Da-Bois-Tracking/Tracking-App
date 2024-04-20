@@ -191,32 +191,49 @@ class UsersRepository:
         try:
             conn = connection_pool.getconn()
             with conn.cursor() as db:
-                db.execute("SELECT * FROM users WHERE id = %s;", [user_id])
-                existing_user = db.fetchone()
-                if not existing_user:
-                    return Error(message="User not found.")
-
-                updates, values = [], []
-                for field, value in user.model_dump.items():
-                    updates.append(f"{field} = %s")
-                    values.append(value)
-                if updates:
-                    query = (
-                        "UPDATE users SET "
-                        + ", ".join(updates)
-                        + " WHERE id = %s RETURNING *;"
-                    )
-                    values.append(user_id)
-                    db.execute(query, values)
-                    updated_user = db.fetchone()
-                    conn.commit()
-                    return self.user_in_to_out(
-                        user_id, self.user_to_out(updated_user).model_dump()
-                    )
-                else:
-                    return self.user_in_to_out(
-                        user_id, self.user_to_out(existing_user).model_dump()
-                    )
+                db.execute(
+                    """
+                    UPDATE users
+                    SET username = COALESCE(%s, username),
+                        first_name = COALESCE(%s, first_name),
+                        last_name = COALESCE(%s, last_name),
+                        email = COALESCE(%s, email),
+                        password = COALESCE(%s, password),
+                        member_since = COALESCE(%s, member_since),
+                        date_of_birth = COALESCE(%s, date_of_birth),
+                        phone_number = COALESCE(%s, phone_number),
+                        country = COALESCE(%s, country),
+                        state = COALESCE(%s, state),
+                        city = COALESCE(%s, city),
+                        weight = COALESCE(%s, weight),
+                        height_cm = COALESCE(%s, height_cm),
+                        skill_level = COALESCE(%s, skill_level),
+                        position = COALESCE(%s, position)
+                    WHERE id = %s
+                    RETURNING *;
+                    """,
+                    [
+                        user.username,
+                        user.first_name,
+                        user.last_name,
+                        user.email,
+                        user.password,
+                        user.member_since,
+                        user.date_of_birth,
+                        user.phone_number,
+                        user.country,
+                        user.state,
+                        user.city,
+                        user.weight,
+                        user.height_cm,
+                        user.skill_level,
+                        user.position,
+                        user_id,
+                    ],
+                )
+                record = db.fetchone()
+                conn.commit()
+                return self.user_to_out(record)
         except Exception as e:
             return Error(message=f"Failed to update user: {str(e)}")
 
