@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from queries.pool import connection_pool
 from typing import Union, Optional
 from datetime import date
+import bcrypt
 
 
 class Error(BaseModel):
@@ -100,6 +101,8 @@ class UsersRepository:
 
     def create_user(self, user: UserIn) -> Union[UserOut, Error]:
         try:
+            hashed_password_bytes = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt())
+            hashed_password = hashed_password_bytes.decode("utf-8")
             conn = connection_pool.getconn()
             with conn.cursor() as db:
                 db.execute(
@@ -129,7 +132,7 @@ class UsersRepository:
                         user.first_name,
                         user.last_name,
                         user.email,
-                        user.password,
+                        hashed_password,
                         user.member_since,
                         user.date_of_birth,
                         user.phone_number,
@@ -191,6 +194,11 @@ class UsersRepository:
         try:
             conn = connection_pool.getconn()
             with conn.cursor() as db:
+                if user.password:
+                    hashed_password_bytes = bcrypt.hashpw(
+                        user.password.encode("utf-8"), bcrypt.gensalt()
+                    )
+                    hashed_password = hashed_password_bytes.decode("utf-8")
                 db.execute(
                     """
                     UPDATE users
@@ -217,7 +225,7 @@ class UsersRepository:
                         user.first_name,
                         user.last_name,
                         user.email,
-                        user.password,
+                        hashed_password,
                         user.member_since,
                         user.date_of_birth,
                         user.phone_number,
