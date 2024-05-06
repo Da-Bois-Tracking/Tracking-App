@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { CountryDropdown, StateDropdown, CityDropdown, PhoneInput } from "react-country-state-dropdown";
+import { CitySelect, CountrySelect, StateSelect, LanguageSelect, } from "react-country-state-city";
+
 
 // interface User {
 //     userName: string
@@ -14,9 +16,9 @@ const Registration = () => {
     const [ confirmPassword, setConfirmPassword ] = useState("")
     const [ dob, setDob ] = useState("")
     const [ phoneNumber, setPhoneNumber ] = useState("")
-    const [ country, setCountry ] = useState("")
-    const [ state, setState ] = useState("")
-    const [ city, setCity ] = useState("")
+    const [ country, setCountry ] = useState(0)
+    const [ state, setState ] = useState(0)
+    const [ city, setCity ] = useState(0)
     const [ weight, setWeight ] = useState("")
     const [ height, setHeight ] = useState("")
     const [ skillLevel, setSkillLevel ] = useState("")
@@ -93,21 +95,24 @@ const Registration = () => {
                     country={country} 
                     value={phoneNumber} 
                     onChange={(e) => setPhoneNumber(e.target.value)} />
-                <CountryDropdown 
+                <CountrySelect
                     clearable 
                     value={country} 
-                    onChange={(e) => setCountry(e.target.value)} />
-                <StateDropdown 
+                    onChange={(e) => setCountry(e.id)} 
+                    placeHolder="Select Country"/>
+                <StateSelect
                     clearable 
                     country={country} 
                     value={state} 
-                    onChange={(e) => setState(e.target.value)} />
-                <CityDropdown 
+                    onChange={(e) => setState(e.id)} 
+                    placeHolder="Select State" />
+                <CitySelect
                     clearable 
                     allowFreeFormText 
                     country={country}
                     state={state} 
-                    value={city} onChange={(e) => setCity(e.target.value)} />
+                    value={city} onChange={(e) => setCity(e.id)} 
+                    placeHolder="Select City" />
                 <input 
                     type="number" 
                     placeholder="Weight(kg)"
