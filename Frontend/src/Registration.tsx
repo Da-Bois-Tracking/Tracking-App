@@ -26,23 +26,27 @@ const Registration = () => {
         setSkillLevel(e.target.value)
     }
 
-    const BASE_URL = "http://localhost:8000"
+    const BASE_URL = "http://localhost:8000/"
 
     const handleRegistration = (e) => {
         e.preventDefault()
 
-        console.log(userName, firstName)
-        let data = {userName, firstName}
-
-        fetch(`${BASE_URL}/users/`, {
-            method:"POST",
-            headers:{
-                "accept":"application/json",
-                "Content-type":"application/json"
-            },
-            body:JSON.stringify(data)
-        })
-    }    
+        if(password !== confirmPassword){
+            alert("Passwords do not match!")
+        } else {
+            console.log(userName, firstName, lastName, email, password, confirmPassword, dob, phoneNumber, country, state, city, weight, height, skillLevel, position)
+            let data = {userName, firstName, lastName, email, password, dob, phoneNumber, country, state, city, weight, height, skillLevel, position}
+    
+            fetch(`${BASE_URL}users/`, {
+                method:"POST",
+                headers:{
+                    "accept":"application/json",
+                    "Content-type":"application/json"
+                },
+                body:JSON.stringify(data)
+            })
+        }
+    }
 
 
     return (
