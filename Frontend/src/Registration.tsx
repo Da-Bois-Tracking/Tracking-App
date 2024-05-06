@@ -6,28 +6,46 @@ import { CountryDropdown, StateDropdown, CityDropdown, PhoneInput } from "react-
 // }
 
 const Registration = () => {
-     const [ userName, setUserName ] = useState("")
-     const [ firstName, setFirstName ] = useState("")
-     const [ lastName, setLastName ] = useState("")
-     const [ email, setEmail ] = useState("")
-     const [ password, setPassword ] = useState("")
-     const [ confirmPassword, setConfirmPassword ] = useState("")
-     const [ dob, setDob ] = useState("")
-     const [ phoneNumber, setPhoneNumber ] = useState("")
-     const [ country, setCountry ] = useState("")
-     const [ state, setState ] = useState("")
-     const [ city, setCity ] = useState("")
-     const [ weight, setWeight ] = useState("")
-     const [ height, setHeight ] = useState("")
-     const [ skillLevel, setSkillLevel ] = useState("")
-     const [ position, setPosition ] = useState("")
+    const [ userName, setUserName ] = useState("")
+    const [ firstName, setFirstName ] = useState("")
+    const [ lastName, setLastName ] = useState("")
+    const [ email, setEmail ] = useState("")
+    const [ password, setPassword ] = useState("")
+    const [ confirmPassword, setConfirmPassword ] = useState("")
+    const [ dob, setDob ] = useState("")
+    const [ phoneNumber, setPhoneNumber ] = useState("")
+    const [ country, setCountry ] = useState("")
+    const [ state, setState ] = useState("")
+    const [ city, setCity ] = useState("")
+    const [ weight, setWeight ] = useState("")
+    const [ height, setHeight ] = useState("")
+    const [ skillLevel, setSkillLevel ] = useState("")
+    const [ position, setPosition ] = useState("")
     
-     const handleSkill = (event) => {
-        setSkillLevel(event.target.value)
-     }
+    const handleSkill = (e) => {
+        setSkillLevel(e.target.value)
+    }
+
+    const BASE_URL = "http://localhost:8000"
+
+    const handleRegistration = (e) => {
+        e.preventDefault()
+
+        console.log(userName, firstName)
+        let data = {userName, firstName}
+
+        fetch(`${BASE_URL}/users/`, {
+            method:"POST",
+            headers:{
+                "accept":"application/json",
+                "Content-type":"application/json"
+            },
+            body:JSON.stringify(data)
+        })
+    }    
 
 
-     return (
+    return (
         <div>
             <h1>Registration</h1>
             <form>
@@ -108,9 +126,12 @@ const Registration = () => {
                     placeholder="Position"
                     value={position} 
                     onChange={(e) => setPosition(e.target.value)} />
+                <button type="submit" onClick={handleRegistration}>
+                    Register
+                </button>
             </form>
         </div>
-     )
+    )
 }
 
 export default Registration
