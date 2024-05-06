@@ -22,11 +22,14 @@ const Registration = () => {
      const [ skillLevel, setSkillLevel ] = useState("")
      const [ position, setPosition ] = useState("")
     
+     const handleSkill = (event) => {
+        setSkillLevel(event.target.value)
+     }
 
 
      return (
         <div>
-            <h1>Regsistration</h1>
+            <h1>Registration</h1>
             <form>
                 <input 
                     type="text"
@@ -93,6 +96,18 @@ const Registration = () => {
                     placeholder="Height(cm)"
                     value={height} 
                     onChange={(e) => setHeight(e.target.value)} />
+                <label htmlFor="skill level">Skill Level</label>
+                <select name="skill level" value={skillLevel} onChange={handleSkill}>
+                    <option value="high school">High School</option>
+                    <option value="college">College</option>
+                    <option value="semi pro">Semi-pro</option>
+                    <option value="professional">Professional</option>
+                </select>
+                <input 
+                    type="text" 
+                    placeholder="Position"
+                    value={position} 
+                    onChange={(e) => setPosition(e.target.value)} />
             </form>
         </div>
      )
